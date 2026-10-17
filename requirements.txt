@@ -1,13 +1,12 @@
+# Core Production Dependencies (Vercel & Streamlit Cloud compatible)
 streamlit>=1.32.0
 langchain>=0.1.0
 langchain-community>=0.0.20
 langchain-openai>=0.0.5
 langchain-groq>=0.1.0
-chromadb>=0.4.22
-sentence-transformers>=2.3.0
 pypdf>=4.0.0
 python-dotenv>=1.0.0
-transformers>=4.37.0
-torch>=2.1.0
-# Optional alternative vector store:
-# faiss-cpu>=1.7.4
+requests>=2.31.0
+
+# For full offline PyTorch / Sentence-Transformers / ChromaDB,
+# install optional packages via: pip install -r requirements-local.txt

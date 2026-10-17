@@ -2,139 +2,148 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![LangChain](https://img.shields.io/badge/LangChain-RAG-green)](https://www.langchain.com/)
-[![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-orange)](https://www.trychroma.com/)
+[![VectorDB](https://img.shields.io/badge/VectorDB-ChromaDB%20%2F%20In--Memory-orange)](https://www.trychroma.com/)
+[![Vercel](https://img.shields.io/badge/Deployment-Vercel%20Live-black)](https://vercel.com/)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An end-to-end **Retrieval-Augmented Generation (RAG)** application that lets you upload PDF/TXT
-documents, stores them in a **vector database**, and answers your questions using an LLM —
-with **source citations** from the documents.
+An end-to-end **Retrieval-Augmented Generation (RAG)** application that lets you upload and query PDF, TXT, and Markdown documents using modern vector search and Large Language Models — with **verifiable source citations**.
 
-Built as a learning/portfolio project covering the full modern Gen-AI stack:
-**Python • LangChain • Embeddings • ChromaDB/FAISS • LLMs • Streamlit**
+Dual-deployment ready:
+1. **Live Vercel Web Application** — Glassmorphic, ultra-fast serverless web UI and API (`public/` & `api/`).
+2. **Streamlit App** — Full-featured interactive dashboard for local development & Streamlit Cloud (`app.py`).
 
 ---
 
 ## ✨ Features
 
-- 📄 **Multi-format ingestion** — load PDF and TXT files from a folder or upload via UI
-- ✂️ **Smart chunking** — `RecursiveCharacterTextSplitter` with overlap for better retrieval
-- 🧠 **Local embeddings** — `sentence-transformers/all-MiniLM-L6-v2` (free, no API key needed)
-- 🗄️ **Vector stores** — ChromaDB (persistent) with optional FAISS swap
-- 💬 **Conversational memory** — follow-up questions work ("...and what about chapter 3?")
-- 🔍 **Source citations** — see exactly which document chunks the answer came from
-- 🤖 **Pluggable LLM** — OpenAI / Groq / **fully local HuggingFace model (no API key)**
-- 🖥️ **Clean Streamlit UI** — chat history, upload panel, retrieval settings sidebar
+- 📄 **Multi-Format Ingestion** — Load and parse PDF, TXT, and Markdown (`.md`) documents.
+- ✂️ **Smart Chunking** — Overlapping chunking with metadata preservation for precise document citations.
+- 🧠 **Embeddings & Vector Stores** — Supports ChromaDB, OpenAI Embeddings, HuggingFace embeddings, and lightweight zero-dependency vector similarity.
+- 💬 **Conversational Memory** — Contextual follow-up memory across conversation turns.
+- 🔍 **Source Citations** — Verifiable page numbers and text excerpts cited for every answer.
+- 🤖 **Pluggable LLMs** — Groq (ultra-fast Llama 3.1), OpenAI (GPT-4o-mini), and local extractive mode (no API key required).
+- 🌐 **Vercel Serverless Ready** — Pre-configured `vercel.json` and `api/index.py` for immediate deployment to Vercel without memory or size limit errors.
+
+---
 
 ## 🏗️ Architecture
 
 ```
-PDF/TXT docs
-     │
-     ▼
-┌─────────────────┐     ┌──────────────┐
-│ Document Loader │────▶│ Text Splitter│  (LangChain)
-└─────────────────┘     └──────┬───────┘
-                               │ chunks
-                               ▼
-                   ┌──────────────────────┐
-                   │ Embedding Model      │  (all-MiniLM-L6-v2)
-                   └──────────┬───────────┘
-                              │ vectors
-                              ▼
-                   ┌──────────────────────┐
-                   │ ChromaDB (persistent)│ ◀──── user question (also embedded)
-                   └──────────┬───────────┘
-                              │ top-k similar chunks
-                              ▼
-                   ┌──────────────────────┐
-                   │ LLM + Prompt         │  (OpenAI / Groq / local HF)
-                   └──────────┬───────────┘
-                              ▼
-                   Answer + source citations
+User Document (PDF / TXT / MD)
+          │
+          ▼
+┌────────────────────────┐
+│     Text Splitter      │  (Recursive chunking with overlap)
+└───────────┬────────────┘
+            │
+            ▼
+┌────────────────────────┐
+│ Vector Database / Index│  (ChromaDB / Cosine similarity)
+└───────────┬────────────┘
+            │
+            ▼ Top-k relevant chunks
+┌────────────────────────┐
+│  LLM Synthesis Engine  │ ◀──── User Question
+│  (Groq / OpenAI / Local│
+└───────────┬────────────┘
+            │
+            ▼
+Answer + Traceable Source Citations (Document & Page)
 ```
 
-## 🚀 Getting Started
+---
 
+## 🚀 Live Vercel Deployment
+
+This project includes a production-ready Vercel serverless application in `public/` and `api/index.py`.
+
+### Deploy to Vercel in 2 Minutes:
+
+#### Option 1: Via GitHub & Vercel Dashboard (Recommended)
+1. Push this repository to your GitHub account:
+   ```bash
+   git remote add origin https://github.com/<your-username>/docuquery-rag-chatbot.git
+   git branch -M main
+   git push -u origin main
+   ```
+2. Open [vercel.com](https://vercel.com/) and click **"Add New Project"**.
+3. Import your GitHub repository `docuquery-rag-chatbot`.
+4. (Optional) In **Environment Variables**, add:
+   - `GROQ_API_KEY`: Your free Groq API key (from [console.groq.com](https://console.groq.com/keys))
+   - `OPENAI_API_KEY`: Your OpenAI API key (optional)
+5. Click **Deploy**. Your app is immediately live with HTTPS!
+
+#### Option 2: Via Vercel CLI
+```bash
+npm install -g vercel
+vercel
+```
+
+---
+
+## 💻 Running the Streamlit App Locally
+
+### 1. Clone & Set Up Virtual Environment
 ```bash
 git clone https://github.com/<your-username>/docuquery-rag-chatbot.git
 cd docuquery-rag-chatbot
 
 python -m venv venv
 venv\Scripts\activate        # Windows
-# source venv/bin/activate     # Linux/Mac
+# source venv/bin/activate   # Linux / macOS
 
 pip install -r requirements.txt
 ```
 
-### Run with a local model (no API key required) ⭐
-```bash
-streamlit run app.py
-```
-The app falls back to a small local HuggingFace model (`flan-t5-small`) automatically
-if no API key is set. Perfect for demos on a laptop.
-
-### Optional: use a stronger cloud LLM
+### 2. Configure Environment (Optional)
 ```bash
 cp .env.example .env
-# fill in OPENAI_API_KEY or GROQ_API_KEY, then:
+# Edit .env and paste your GROQ_API_KEY or OPENAI_API_KEY
+```
+
+### 3. Run Streamlit Dashboard
+```bash
 streamlit run app.py
 ```
 
-## 🖥️ Usage
+### 4. Build Vector DB from Command Line (Optional)
+```bash
+python scripts/build_index.py
+```
 
-1. Put your documents in `data/sample_docs/` (a sample file is included)
-2. Click **"Build / Rebuild Vector DB"** in the sidebar
-3. Ask questions in the chat box — answers come with cited source chunks
-
-Try with the included sample doc:
-> *"What is the difference between supervised and unsupervised learning?"*
+---
 
 ## 📁 Project Structure
 
 ```
 docuquery-rag-chatbot/
-├── app.py                  # Streamlit UI entry point
+├── app.py                  # Streamlit UI dashboard
+├── vercel.json             # Vercel deployment configuration
+├── api/
+│   └── index.py            # Vercel Serverless Python RAG API
+├── public/                 # Vercel Web App (HTML5, CSS3, JavaScript)
+│   ├── index.html          # Modern glassmorphism web interface
+│   ├── style.css           # Premium dark theme & responsive styles
+│   └── app.js              # Client chat logic & citation renderer
 ├── src/
 │   ├── ingest.py           # Load, split, embed & store documents
-│   ├── llm.py              # Pluggable LLM provider (OpenAI/Groq/local HF)
+│   ├── llm.py              # Pluggable LLM provider (Groq/OpenAI/Local)
 │   └── chain.py            # Conversational RAG chain with memory
 ├── scripts/
-│   └── build_index.py      # CLI: build vector DB without the UI
-├── data/sample_docs/       # Sample documents
-├── chroma_db/              # Persistent vector store (auto-created)
-├── requirements.txt
+│   └── build_index.py      # CLI script to rebuild vector store
+├── data/sample_docs/       # Document library (PDF, TXT, MD)
+│   └── ml_basics_notes.txt # Preloaded sample machine learning notes
+├── chroma_db/              # Persistent vector store (auto-generated)
+├── requirements.txt        # Production dependencies (Vercel & Streamlit)
+├── requirements-local.txt  # Optional offline PyTorch & ChromaDB
 ├── .env.example
 ├── .gitignore
 └── LICENSE
 ```
 
-## 🧰 Tech Stack
-
-| Component | Tool |
-|---|---|
-| Language | Python 3.10+ |
-| Orchestration | LangChain |
-| Embeddings | sentence-transformers (all-MiniLM-L6-v2) |
-| Vector DB | ChromaDB (FAISS interchangeable) |
-| LLM | OpenAI / Groq / HuggingFace (local) |
-| UI | Streamlit |
-
-## 🗺️ Roadmap / Future Work
-
-- [ ] Hybrid search (BM25 + vector) for better retrieval
-- [ ] Reranking with cross-encoder
-- [ ] Evaluation metrics (faithfulness, answer relevancy)
-- [ ] Docker deployment
-- [ ] Multi-modal support (images in PDFs)
-
-## 📚 What I Learned
-
-- How text is **tokenized, chunked and embedded** into dense vectors
-- How **similarity search** over a vector DB retrieves relevant context
-- How **RAG grounds an LLM** on private data and reduces hallucination
-- Trade-offs between local small models vs. cloud LLMs
+---
 
 ## 📄 License
 
-MIT — feel free to fork and build on it.
+MIT License — Feel free to use and customize for your own projects.

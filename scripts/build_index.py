@@ -5,10 +5,17 @@ Usage:  python scripts/build_index.py
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+# Add project root to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.ingest import rebuild_index
 
 if __name__ == "__main__":
-    stats = rebuild_index()
-    print(f"Done! Loaded {stats['documents']} documents into {stats['chunks']} chunks.")
+    try:
+        print("Starting vector index build...")
+        stats = rebuild_index()
+        print(f"Success! Loaded {stats['documents']} documents into {stats['chunks']} chunks in chroma_db.")
+    except Exception as e:
+        print(f"Error building vector index: {e}")
+        sys.exit(1)
+

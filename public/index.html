@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuQuery AI — Intelligent Document Q&amp;A Chatbot (RAG)</title>
+  <meta name="description" content="End-to-end Retrieval-Augmented Generation (RAG) assistant for querying PDF, TXT, and Markdown documents with verified source citations.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h2>DocuQuery AI</h2>
+            <span class="version-badge">RAG Vector Hub</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-scrollable">
+        <!-- Model Configuration Section -->
+        <div class="config-card">
+          <h3 class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            LLM Engine
+          </h3>
+
+          <div class="provider-selector">
+            <button class="provider-btn active" id="btn-groq" data-provider="groq">
+              <span class="provider-icon">⚡</span>
+              <div class="provider-info">
+                <strong>Groq</strong>
+                <small>Llama 3.1 • Free &amp; Fast</small>
+              </div>
+            </button>
+            <button class="provider-btn" id="btn-openai" data-provider="openai">
+              <span class="provider-icon">🧠</span>
+              <div class="provider-info">
+                <strong>OpenAI</strong>
+                <small>GPT-4o-mini</small>
+              </div>
+            </button>
+            <button class="provider-btn" id="btn-local" data-provider="local">
+              <span class="provider-icon">💻</span>
+              <div class="provider-info">
+                <strong>Local RAG</strong>
+                <small>No API Key Needed</small>
+              </div>
+            </button>
+          </div>
+
+          <div class="input-group" id="apiKeyContainer">
+            <label for="apiKeyInput" id="apiKeyLabel">Groq API Key</label>
+            <div class="password-wrapper">
+              <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off">
+              <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" aria-label="Toggle password visibility">👁️</button>
+            </div>
+            <span class="input-hint" id="apiKeyHint">
+              Get a free instant key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com</a>
+            </span>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="topKSlider">Chunks Retrieved (Top-k)</label>
+              <span class="slider-val" id="topKValue">4</span>
+            </div>
+            <input type="range" id="topKSlider" min="1" max="8" value="4">
+          </div>
+        </div>
+
+        <!-- Document Library Section -->
+        <div class="config-card">
+          <h3 class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Indexed Documents
+          </h3>
+
+          <ul class="doc-list" id="docList">
+            <li class="doc-item active">
+              <div class="doc-icon">📄</div>
+              <div class="doc-meta">
+                <span class="doc-name">ml_basics_notes.txt</span>
+                <span class="doc-chunks">5 chunks indexed • Vector Ready</span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="upload-dropzone" id="dropZone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <p><strong>Upload Document</strong> (TXT, MD)</p>
+            <span>Click or drag &amp; drop file</span>
+            <input type="file" id="fileInput" accept=".txt,.md" style="display: none;">
+          </div>
+        </div>
+
+        <button class="clear-btn" id="clearChatBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear Chat History
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="Toggle sidebar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div class="topbar-status">
+          <span class="status-dot"></span>
+          <span class="status-text">Vector Knowledge Base Active</span>
+        </div>
+        <div class="topbar-actions">
+          <span class="engine-badge" id="activeEngineBadge">Groq Llama 3.1</span>
+        </div>
+      </header>
+
+      <!-- Chat Thread -->
+      <section class="chat-container" id="chatContainer">
+        <!-- Hero Welcome -->
+        <div class="hero-welcome" id="heroWelcome">
+          <div class="hero-icon">📄</div>
+          <h1>Ask Your Documents Anything</h1>
+          <p class="hero-subtitle">
+            Powered by Retrieval-Augmented Generation (RAG). Every answer is strictly grounded in your indexed documents and includes traceable source citations.
+          </p>
+
+          <div class="feature-pills">
+            <div class="pill">
+              <span class="pill-dot"></span> Smart Semantic Chunking
+            </div>
+            <div class="pill">
+              <span class="pill-dot"></span> Vector Cosine Retrieval
+            </div>
+            <div class="pill">
+              <span class="pill-dot"></span> Transparent Source Citations
+            </div>
+          </div>
+
+          <div class="sample-questions-box">
+            <h3>Try a sample question:</h3>
+            <div class="sample-chips">
+              <button class="chip-btn" data-query="What is the difference between supervised and unsupervised learning?">
+                What is supervised vs unsupervised learning?
+              </button>
+              <button class="chip-btn" data-query="What are vector embeddings and how do vector databases work?">
+                How do vector embeddings work?
+              </button>
+              <button class="chip-btn" data-query="What is the difference between classification and regression?">
+                Classification vs Regression
+              </button>
+              <button class="chip-btn" data-query="What are the main components of a RAG pipeline?">
+                How does the RAG pipeline operate?
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="messages-list" id="messagesList"></div>
+      </section>
+
+      <!-- Input Bar -->
+      <footer class="input-container">
+        <form class="chat-form" id="chatForm">
+          <div class="input-wrapper">
+            <textarea
+              id="userInput"
+              rows="1"
+              placeholder="Ask a question about your documents... (Enter to send, Shift+Enter for new line)"
+              required
+            ></textarea>
+            <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </form>
+        <p class="footer-note">DocuQuery AI verifies facts against indexed chunks. Answers are grounded in document context.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
