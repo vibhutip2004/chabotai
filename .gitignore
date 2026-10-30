@@ -8,3 +8,11 @@ chroma_db/
 *.egg-info/
 .vercel
 node_modules/
+*.db
+*.sqlite
+*.sqlite3
+
+uploads/
+
+
+uvicorn_*.txt
